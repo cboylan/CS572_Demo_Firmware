@@ -1,0 +1,52 @@
+Tyler Hayes
+cs572 - Project writeup
+12/8/09
+
+
+I worked with Sean Bruno on this project, which we simply called "lighty".
+The original plan was to be able to manipulate the 2 given LED lights from
+a user program with simple commands in ways such as changing the colors to
+various gradients, turning the lights on and off, making them blink with
+various time intervals, etc.  However, as the term drew closer and closer to
+a close (and both of our other classes overloading us with work), that
+flexibility was replaced with "let's just get something working."
+
+The major road block that was confronted was the firmware for the device.
+There was a problem running Arduino in Fedora 11 (Sean's box, the machine we
+were testing on), which took poor Sean a lot of tedious man hours and
+correspondance with other developers in order to remedy.  He ended up running
+a Fedora 12 VM in Fedora 11.  Then the next step was figuring out how to set
+up endpoints in the firmware that the driver could connect to.  After much
+tinkering, Sean made use of the HID code supplied by the PJRC site.
+
+In the meantime I was working on the driver side of things.  I still find the
+code for linux device drivers in general very confusing, especially usb.  I'm
+sure it just takes more experience reading, writing, and experimenting with
+them to wrap one's head around exactly what's going on, but until then I used
+Greg Kroah-Hartman's usb-skeleton.c driver example as a guide.  Since it
+didn't make much sense to read/write from/to led lights, a read function and
+a write function were not implemented.  Instead, strictly ioctl was used. I
+set up the ioctl magic numbers and command numbers in the header file, but
+left the ioctl() function itself a stub until the firmware was completed.  I
+also left a proc stub in case we wanted to use it.
+
+I also wrote a small C test program to test/demo the project.  It is just a
+user command line prompt where the user can type one of six commands:
+1=r, 1=g, 1=b, 2=r, 2=g, 2=b, which mean turn light 1 red, turn light 1 green,
+etc.
+
+Once Sean got the firmware going, he completed the ioctl function and fixed
+up probe() where appropriate (I had left the probe function in a state that
+checked for bulk endpoints, where we needed interrupt endpoints) to make the
+connection between driver and device.  He also added the necessary write
+interrupt callback routine.
+
+A lot of the driver has verbose comments in it because it helps me remember
+and understand what and why some code is doing what it's doing--something
+significantly missing in the book's example code--and to possibly help explain
+to anyone else new to the world of LDD.
+
+It was pretty cool working with actual hardware and providing a driver for it.
+However, it did get pretty stressful--at least for Sean and myself--due to the
+heavy load of our other classes with only 3 weeks left in the term.  Other
+than that it was pretty fun.

@@ -1,0 +1,35 @@
+Sean Bruno
+CS572
+Project Summary
+
+This term's device driver project was a fairly large amount of work for the 
+term.  The Atmel Atmega32U based Teensy device threw a couple of curve balls
+that I will attempt to document here.
+
+The first two weeks of the project were spent wiring out the LEDs and figuring
+out how to use the arduino development platform.  During this process, I came
+to the conclusion that the avr-gcc pacakge I was using on my Fedora 11 machine
+did not support this embedded processor.  Over the course of a week or so of
+email exchanges, I was able to resolve the issue with the package maintainer
+and moved my development to a Fedora 12 image in a virtual machine.
+
+The next challenge was to design and load a working firmware image into the
+Teensy.  I spent some time working with Arduino's blinky example to get a feel
+for how the board would work.  Using this code example, we wired up the LEDs
+to six pins and were able to control the Teensy via the Arduino serial console.
+
+At this point, we had to figure out how to implement a USB endpoint so that
+we could control the LEDs via a device driver.  We found the teensy USB rawhid
+examples via a posting to the CS572 mailing list.  After a bit of tweeking to
+the existing example code, we came up with a simple protocol to control the LEDs
+via a single character.
+
+We had some issues with the generic HID module interferring with our testing
+that we resolved by changing the Teensy's firmware to show a vendor specific
+ID of 0xFF.  This kept the kernel from assuming that it should load the generic
+HID driver and we were able to load a template driver.
+
+Tyler coded out the USB specific and the driver specific parts and I was able
+to hook in a simple ioctl interface to allow userland control of the LEDs. 
+Once we had the driver loaded, Tyler hooked up our test program and we were able
+to control the LEDs from userland via a simple "1=r" type interface.
