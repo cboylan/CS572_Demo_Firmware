@@ -1,0 +1,30 @@
+0.  Can you checkout code with GIT?
+0.5 did you wire up your teensy yet?
+    CS572_Demo_Firmware/lighty/teensy_wiring.txt
+
+1.  Can you COMPILE the firmware on your machine?
+    CS572_Demo_Firmware/usb_rawhid
+    -- avr-gcc, avr-libc, avr-binutils installed?
+    -- Did you change the MCU value in usr_rawhid to match your teensy?
+        e.g. MCU = at90usb1286      # Teensy++ 2.0
+
+2.  Can you compile the downloader on your machine?
+    CS572_Demo_Firmware/teensy_loader_cli
+
+3.  Can you download the firmware for your teensy?
+sudo ./teensy_loader_cli/teensy_loader_cli -w -v -mmcu=<MCU> ../usb_rawhid/example.hex
+
+4.  Can you compile the kernel driver?
+    -- kernel-devel, libusb-devel installed?
+
+5.  Install udev rules?
+    -- 99-lighty.rules
+
+6.  Modprobe lighty.ko
+
+7.  Can you compile and run the test program?
+    make test
+    sudo ./test
+    <led 1|2>=<color r|g|b>
+	e.g. '1=r' turns on the first led and makes it red.
+
